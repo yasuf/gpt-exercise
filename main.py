@@ -19,6 +19,8 @@ n_head = 6
 n_layer = 6
 dropout = 0.2
 
+print(f"Selected device '{device}'.")
+
 torch.manual_seed(1337)
 
 # https://raw.githubusercontent.com/karpathy/char-rnn/refs/heads/master/data/tinyshakespeare/input.txt
@@ -46,8 +48,8 @@ y = train_data[1:block_size + 1]
 def get_batch(split):
   data = train_data if split == 'train' else val_data
   ix = torch.randint(len(data) - block_size, (batch_size, ))
-  x = torch.stack([data[i:i+block_size] for i in ix])
-  y = torch.stack([data[i+1:i+block_size+1] for i in ix])
+  x = torch.stack([data[i:i+block_size] for i in ix]).to(device)
+  y = torch.stack([data[i+1:i+block_size+1] for i in ix]).to(device)
   return x, y
 
 @torch.no_grad()
