@@ -1,6 +1,10 @@
 import torch
 import torch.nn as nn
+import wandb
 from torch.nn import functional as F
+
+# Initialize wandb
+wandb.init(project="alpha-gpt")
 
 # hyperparameters
 batch_size = 64 # how many independent sequences will we process in parallel
@@ -95,7 +99,7 @@ class FeedForward(nn.Module):
     super().__init__()
     self.net = nn.Sequential(
       nn.Linear(n_embd, 4 * n_embd),
-      nn.Relu(),
+      nn.ReLU(),
       nn.Linear(4 * n_embd, n_embd),
       # nn.Dropout(dropout),
     )
@@ -212,3 +216,10 @@ for iter in range(max_iters):
 # Generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 print(decode(model.generate(context, max_new_tokens=500)[0].tolist()))
+
+model_state = model.state_dict()
+torch.save(model_state, './model_weights.pth')
+
+# Store weights
+artifact = wandb.Artifact('model_weights', type='model')
+artifact.add_file('./model_weights.pth')
