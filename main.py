@@ -4,13 +4,13 @@ import wandb
 from torch.nn import functional as F
 
 # Initialize wandb
-wandb.init(project="alpha-gpt")
+run = wandb.init(project="alpha-gpt")
 
 # hyperparameters
-batch_size = 64 # how many independent sequences will we process in parallel
+batch_size = 64 # how many independent sequences will we process in parallel?
 block_size = 256 # what is the maximum context length for predictions?
 max_iters = 5000 # number of training iterations for backpropagation
-eval_interval = 500
+eval_interval = 100
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 eval_iters = 200
@@ -192,12 +192,15 @@ class BigramLanguageModel(nn.Module):
       idx = torch.cat((idx, idx_next), dim=1)
     return idx
 
+
+print("Initializing model..")
 model = BigramLanguageModel(vocab_size)
 m = model.to(device)
 
 # Create a PyTorch optimizer
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
+print("Starting training..")
 for iter in range(max_iters):
   # every one in a while, evaluate the loss on train and val sets
   if iter % eval_interval == 0:
@@ -213,6 +216,8 @@ for iter in range(max_iters):
   loss.backward()
   optimizer.step()
 
+print("Finished training..")
+print("Generating example text:")
 # Generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 print(decode(model.generate(context, max_new_tokens=500)[0].tolist()))
@@ -223,3 +228,6 @@ torch.save(model_state, './model_weights.pth')
 # Store weights
 artifact = wandb.Artifact('model_weights', type='model')
 artifact.add_file('./model_weights.pth')
+run.log_artifact(artifact)
+
+wandb.finish()
