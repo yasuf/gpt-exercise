@@ -4,23 +4,12 @@ A repo to train a GPT neural network, this is only the pretraining step, without
 
 ## How to setup project in a remote environment to run training
 
-1. Install pipenv
+1. Clone the repository and cd into it
 
 ```
-pip install pipenv
-```
-
-2. Clone repository
-
-```
-https://github.com/yasuf/gpt-exercise
-```
-
-3. Install pyenv
-
-```
-curl -fsSL https://pyenv.run | bash
+git clone https://github.com/yasuf/gpt-exercise
+cd ./gpt-exercise
+sh setup.sh
 ```
 
 
-## Troubleshooting
