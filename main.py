@@ -13,6 +13,9 @@ config = {
   "num_graphic_cards": num_graphic_cards
 }
 
+print(f"Configured graphics card for run: {graphics_card}")
+print(f"Configured number of graphics cards for run: {num_graphic_cards}")
+
 # Initialize wandb
 run = wandb.init(project="alpha-gpt", config=config)
 
