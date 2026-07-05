@@ -5,10 +5,12 @@ from torch.nn import functional as F
 import os
 
 inference_mode = os.getenv("INFERENCE_MODE") == 'true' or os.getenv("INFERENCE_MODE") == '1'
+graphics_card = os.getenv("GRAPHICS_CARD")
+num_graphic_cards = os.getenv("NUM_GRAPHICS_CARDS")
 
 config = {
-  "graphics_card": "",
-  "num_of_graphic_cards": 1
+  "graphics_card": graphics_card,
+  "num_graphic_cards": num_graphic_cards
 }
 
 # Initialize wandb
