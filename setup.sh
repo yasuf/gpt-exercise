@@ -12,28 +12,28 @@ eval "$(pyenv init -)"
 pyenv install 3.11
 
 # # Install pipenv
-# echo "Installing pipenv.."
+echo "Installing pipenv.."
 pip install pipenv
 
 # # Setup pipenv environment
-# echo "Installing python 3.11.."
+echo "Installing python 3.11.."
 pipenv install --python 3.11
 
 # # Add pyenv's python 3.11 version to the $PATH
-# echo "Configuring python 3.11 to PATH.."
+echo "Configuring python 3.11 to PATH.."
 echo "export PATH='$PATH:~/.pyenv/versions/3.11.15/bin/'" > ~/.bashrc && source ~/.bashrc
 
 # # Install the torch version that has CUDA 13.0 GPU drivers
-# echo "Installing pytorch for CUDA 13.0.."
+echo "Installing pytorch for CUDA 13.0.."
 # Check the GPU driver version with nvidia-smi and install the proper drivers for pytorch
-pip install torch --index-url https://download.pytorch.org/whl/cu124
+pipenv run pip install torch --index-url https://download.pytorch.org/whl/cu132
 
 # # Create the pipenv environment
-# echo "Creating pipenv environment.."
-# pipenv install
+echo "Creating pipenv environment.."
+pipenv install
 
 # # Run training using the independent pipenv
-# echo "Starting training script.."
-# pipenv run python ./main.py
+echo "Starting training script.."
+pipenv run python ./main.py
 
 # # E voila, weights are uploaded to wandb!

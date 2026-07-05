@@ -10,6 +10,9 @@ A repo to train a GPT neural network, this is only the pretraining step, without
 git clone https://github.com/yasuf/gpt-exercise
 cd ./gpt-exercise
 sh setup.sh
+
+# Full command
+git clone https://github.com/yasuf/gpt-exercise && cd ./gpt-exercise && sh setup.sh
 ```
 
 ## Troubleshooting
