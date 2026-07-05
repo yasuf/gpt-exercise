@@ -1,3 +1,6 @@
+# read -p "Enter a graphics card name: (e.g. ""RTX 3070"") " GRAPHICS_CARD
+# read -p "Enter the number of graphics cards: (e.g. 1, 2 or more) " NUM_GRAPHICS_CARDS
+
 # Install python version management
 curl -fsSL https://pyenv.run | bash
 
