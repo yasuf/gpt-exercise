@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 import wandb
 from torch.nn import functional as F
+import os
+
+inference_mode = os.getenv("INFERENCE_MODE") == 'true' or os.getenv("INFERENCE_MODE") == '1'
 
 # Initialize wandb
 run = wandb.init(project="alpha-gpt")
@@ -195,30 +198,49 @@ class BigramLanguageModel(nn.Module):
     return idx
 
 
+if inference_mode:
+  print('Downloading weights from WanDB..')
+  # # Indicate the artifact to use. Format is "name:alias"
+  artifact = run.use_artifact("yasu7-deep-atlas/alpha-gpt/model_weights:latest")
+  # # Download the entire artifact
+  model_weights = artifact.download(root='.',path_prefix="model_weights.pth")
+  # with open('./model_weights.pth', 'w') as file:
+  #   file.write(model_weights)
+
 print("Initializing model..")
 model = BigramLanguageModel(vocab_size)
 m = model.to(device)
 
+if inference_mode:
+  state_dict = torch.load('./model_weights.pth', weights_only=True, map_location=device)
+  # Load the weights into our GPT model
+  m.load_state_dict(state_dict)
+  # Set to evaluation mode for inference
+  m.eval()
+
+
 # Create a PyTorch optimizer
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
-print("Starting training..")
-for iter in range(max_iters):
-  # every one in a while, evaluate the loss on train and val sets
-  if iter % eval_interval == 0:
-    losses = estimate_loss()
-    print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+if not inference_mode:
+  print("Starting training..")
+  for iter in range(max_iters):
+    # every one in a while, evaluate the loss on train and val sets
+    if iter % eval_interval == 0:
+      losses = estimate_loss()
+      print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
 
-  # sample a batch of data
-  xb, yb = get_batch('train')
+    # sample a batch of data
+    xb, yb = get_batch('train')
 
-  # evaluate the loss
-  logits, loss = model(xb, yb)
-  optimizer.zero_grad(set_to_none=True)
-  loss.backward()
-  optimizer.step()
+    # evaluate the loss
+    logits, loss = model(xb, yb)
+    optimizer.zero_grad(set_to_none=True)
+    loss.backward()
+    optimizer.step()
 
-print("Finished training..")
+  print("Finished training..")
+
 print("Generating example text:")
 # Generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
@@ -228,8 +250,9 @@ model_state = model.state_dict()
 torch.save(model_state, './model_weights.pth')
 
 # Store weights
-artifact = wandb.Artifact('model_weights', type='model')
-artifact.add_file('./model_weights.pth')
-run.log_artifact(artifact)
+if not inference_mode:
+  artifact = wandb.Artifact('model_weights', type='model')
+  artifact.add_file('./model_weights.pth')
+  run.log_artifact(artifact)
 
 wandb.finish()
