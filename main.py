@@ -6,14 +6,19 @@ import os
 
 inference_mode = os.getenv("INFERENCE_MODE") == 'true' or os.getenv("INFERENCE_MODE") == '1'
 
+config = {
+  "graphics_card": "",
+  "num_of_graphic_cards": 1
+}
+
 # Initialize wandb
-run = wandb.init(project="alpha-gpt")
+run = wandb.init(project="alpha-gpt", config=config)
 
 # hyperparameters
 batch_size = 64 # how many independent sequences will we process in parallel?
 block_size = 256 # what is the maximum context length for predictions?
 max_iters = 5000 # number of training iterations for backpropagation
-eval_interval = 100
+eval_interval = 50
 learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 eval_iters = 200
